@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -7,6 +8,7 @@ namespace Davies_Forum_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ForumController : ControllerBase
     {
 
@@ -17,7 +19,7 @@ namespace Davies_Forum_API.Controllers
             this.context = context;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<Forum>>> Get()
         {
             return Ok(await this.context.ForumEntries.ToListAsync());
@@ -32,7 +34,7 @@ namespace Davies_Forum_API.Controllers
             return Ok(entry);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<Forum>>> AddEntry(Forum entry)
         {
             this.context.ForumEntries.Add(entry);
@@ -41,7 +43,7 @@ namespace Davies_Forum_API.Controllers
             return Ok(await this.context.ForumEntries.ToListAsync());
         }
 
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<Forum>>> UpdateEntry(Forum request)
         {
             var dbEntry = await this.context.ForumEntries.FindAsync(request.Id);
@@ -60,7 +62,7 @@ namespace Davies_Forum_API.Controllers
             return Ok(await this.context.ForumEntries.ToListAsync());
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<Forum>>> Delete(int id)
         {
             var dbEntry = await this.context.ForumEntries.FindAsync(id);
