@@ -1,4 +1,6 @@
-﻿using Davies_Forum_API;
+﻿global using Davies_Forum_API.Services.UserService;
+using Davies_Forum_API;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,10 +16,19 @@ namespace Davies_Forum_API.Controllers
     {
         public static User user = new User();
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, IUserService userService)
         {
             _configuration = configuration;
+            _userService = userService;
+        }
+
+        [HttpGet, Authorize]
+        public ActionResult<string> GetMe()
+        {
+            var userName = _userService.GetMyName();
+            return Ok(userName);
         }
 
         [HttpPost("register")]
